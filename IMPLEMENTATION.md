@@ -1,6 +1,6 @@
 # Implementation Reference
 
-A deep walkthrough of how **Air Quality – Health Risk Correlator** is built: every
+A deep walkthrough of how **AirEcho** (Air-Quality Health Risk Correlator) is built: every
 module, the data model, the two core pipelines, the modeling and RAG layers, the
 frontend, and the infra. Read this alongside `README.md` (the *what* and *why*)
 and `docs/DECISIONS.md` (the rationale + the honest list of simplifications).

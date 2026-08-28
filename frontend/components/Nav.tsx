@@ -25,7 +25,7 @@ export function Logo({ className }: { className?: string }) {
         </defs>
       </svg>
       <span>
-        Air<span className="text-brand">Quality</span>
+        Air<span className="text-brand">Echo</span>
       </span>
     </span>
   );
