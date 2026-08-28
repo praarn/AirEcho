@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Local SQLite test database (created by the test suite)
+*.db
+_test_aq.db
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# ML artifacts
+backend/app/ml/artifacts/*.joblib
+backend/app/ml/artifacts/*.json
+
+# Node / Next
+node_modules/
+.next/
+out/
+next-env.d.ts
+
+# Env / secrets
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads (peak-flow photos in local dev)
+backend/uploads/
