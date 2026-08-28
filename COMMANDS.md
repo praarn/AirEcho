@@ -1,4 +1,4 @@
-# Commands
+# Commands — AirEcho
 
 Every command needed to run, seed, test, and inspect the project. Two paths:
 

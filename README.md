@@ -1,6 +1,8 @@
-# Air Quality – Health Risk Correlator
+# AirEcho
 
-Generic AQI apps show the same number to everyone. This project ties **a person's own
+**Air-Quality Health Risk Correlator** — today's air echoes into how you feel tomorrow.
+
+Generic AQI apps show the same number to everyone. AirEcho ties **a person's own
 exposure history to their own symptom pattern**, with the modeling done honestly
 (**lagged** features at t-0 / t-6h / t-24h, not same-day correlation) and the advisory
 text **grounded in cited WHO / CPCB guideline passages** rather than an LLM improvising

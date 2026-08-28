@@ -33,9 +33,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Air Quality – Health Risk Correlator",
+    title="AirEcho – Air-Quality Health Risk Correlator",
     version="0.1.0",
-    summary="Personalized, lag-aware air-quality risk with grounded WHO/CPCB advisory.",
+    summary="AirEcho: personalized, lag-aware air-quality risk with grounded WHO/CPCB advisory.",
     lifespan=lifespan,
 )
 

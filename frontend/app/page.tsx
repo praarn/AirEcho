@@ -37,13 +37,13 @@ export default function Landing() {
           <div className="absolute inset-0 -z-10 bg-grid bg-[size:44px_44px] [mask-image:radial-gradient(40rem_30rem_at_50%_0%,black,transparent)]" />
           <p className="chip mx-auto w-fit">Next.js · FastAPI · PostgreSQL + pgvector · scikit-learn</p>
           <h1 className="mx-auto mt-5 max-w-3xl text-center text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl">
-            Your air quality, tied to{" "}
+            Today&apos;s air echoes into{" "}
             <span className="bg-gradient-to-r from-brand-soft to-fuchsia-400 bg-clip-text text-transparent">
-              your own symptoms
+              how you feel tomorrow
             </span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-center text-lg text-slate-400">
-            Generic AQI apps show everyone the same number. This one aligns three irregular
+            Generic AQI apps show everyone the same number. AirEcho aligns three irregular
             time series — sensors, weather, and whenever you happen to log a symptom — into a
             feature space a lagged model can actually learn from, without pretending the data
             is cleaner than it is.
