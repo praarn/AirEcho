@@ -59,6 +59,7 @@ export function Nav() {
     ? [
         { href: "/dashboard", label: "Dashboard" },
         { href: "/admin", label: "Live feed" },
+        { href: "/guide", label: "Guide" },
       ]
     : [];
 
@@ -91,12 +92,17 @@ export function Nav() {
               >
                 About
               </a>
-              <a
-                href="#how"
-                className="hidden rounded-lg px-3 py-1.5 text-sm text-slate-400 transition hover:text-slate-100 sm:inline-block"
+              <Link
+                href="/guide"
+                className={clsx(
+                  "hidden rounded-lg px-3 py-1.5 text-sm transition sm:inline-block",
+                  path === "/guide"
+                    ? "bg-white/[0.06] text-white"
+                    : "text-slate-400 hover:text-slate-100",
+                )}
               >
-                How it works
-              </a>
+                Guide
+              </Link>
               <GitHubLink className="mx-1" />
               <Link href="/login" className="btn-ghost !px-3 !py-1.5 text-xs">
                 Sign in
