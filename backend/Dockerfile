@@ -12,7 +12,11 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 COPY pyproject.toml ./
-RUN pip install --upgrade pip && pip install -e ".[dev]"
+# Install the CPU-only torch build first so sentence-transformers doesn't pull
+# the multi-GB CUDA stack it can't use in this container.
+RUN pip install --upgrade pip \
+    && pip install --index-url https://download.pytorch.org/whl/cpu torch \
+    && pip install -e ".[dev]"
 
 COPY . .
 
