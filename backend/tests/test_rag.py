@@ -20,7 +20,13 @@ import app.rag.advisory as advisory_mod
 import app.rag.embed as embed_mod
 import app.rag.retrieve as retrieve_mod
 
-_DIM = 96
+# Vectors must be exactly app.models.EMBED_DIM wide — pgvector's `vector(384)`
+# column rejects any other length (SQLite stores JSON and would silently accept a
+# mismatch, so the real-Postgres CI job is the only place this shows up).
+# Hashing still uses _HASH_DIM buckets so the on-topic / off-topic similarity
+# separation is unchanged; the trailing zeros don't affect cosine distance.
+_HASH_DIM = 96
+_DIM = 384
 _STOP = {
     "the",
     "a",
@@ -68,7 +74,7 @@ def _fake_embed(texts: list[str]) -> list[list[float]]:
             if tok in _STOP or len(tok) < 2:
                 continue
             h = int(hashlib.md5(tok.encode()).hexdigest(), 16)
-            vec[h % _DIM] += 1.0
+            vec[h % _HASH_DIM] += 1.0
         norm = math.sqrt(sum(v * v for v in vec)) or 1.0
         out.append([v / norm for v in vec])
     return out
@@ -78,6 +84,16 @@ def _fake_embed(texts: list[str]) -> list[list[float]]:
 def indexed(db, monkeypatch):
     monkeypatch.setattr(embed_mod, "embed_texts", _fake_embed)
     monkeypatch.setattr(retrieve_mod, "embed_texts", _fake_embed)
+
+    # advisory_log.user_id is a real FK; SQLite ignores it but Postgres (CI)
+    # enforces it, so the users these tests reference have to exist.
+    from app.models import User
+
+    for uid in (1, 7):
+        if db.get(User, uid) is None:
+            db.add(User(id=uid, email=f"rag-user-{uid}@example.com", hashed_password="x"))
+    db.commit()
+
     from app.rag.embed import index_guidelines
 
     stats = index_guidelines(db, reset=True)
