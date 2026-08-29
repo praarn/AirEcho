@@ -10,6 +10,7 @@ from __future__ import annotations
 import functools
 
 from sqlalchemy import select
+from sqlalchemy import text as sql_text
 from sqlalchemy.orm import Session
 
 from app.config import settings
@@ -69,6 +70,14 @@ def index_guidelines(db: Session, *, reset: bool = True) -> dict:
     for (doc_id, ref, chunk), vec in zip(pending, vectors, strict=True):
         db.add(GuidelineChunk(doc_id=doc_id, section_ref=ref, chunk_text=chunk, embedding=vec))
     db.commit()
+
+    # The IVFFlat index (created by the initial migration against an empty table)
+    # computes its centroid lists at build time. Built empty, an index scan for
+    # `ORDER BY embedding <=> q LIMIT k` returns nothing — so every advisory would
+    # silently refuse on PostgreSQL. Rebuild it now that the corpus is present.
+    if db.bind.dialect.name == "postgresql":
+        db.execute(sql_text("REINDEX INDEX ix_guideline_chunks_embedding"))
+        db.commit()
 
     n_docs = db.execute(select(GuidelineDocument)).scalars().all()
     return {"documents": len(n_docs), "chunks": len(pending)}
