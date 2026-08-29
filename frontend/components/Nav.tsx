@@ -62,17 +62,13 @@ export function Nav() {
               {l.label}
             </Link>
           ))}
-          {user ? (
+          {user && (
             <div className="ml-2 flex items-center gap-3 border-l border-white/10 pl-3">
               <span className="hidden text-xs text-slate-500 sm:inline">{user.email}</span>
               <button onClick={logout} className="btn-ghost !px-3 !py-1.5 text-xs">
                 Sign out
               </button>
             </div>
-          ) : (
-            <Link href="/login" className="btn-primary !px-3.5 !py-1.5 text-sm">
-              Sign in
-            </Link>
           )}
         </nav>
       </div>

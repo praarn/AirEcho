@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 from collections.abc import Iterator
 
-from sqlalchemy import Text, create_engine
+from sqlalchemy import Float, Text, create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from sqlalchemy.types import TypeDecorator
 
@@ -41,6 +41,22 @@ class EmbeddingType(TypeDecorator):
     def __init__(self, dim: int):
         self.dim = dim
         super().__init__()
+
+    class Comparator(TypeDecorator.Comparator):
+        """`TypeDecorator` does not forward the wrapped type's comparator, so
+        pgvector's distance operators have to be re-declared here to be usable as
+        `GuidelineChunk.embedding.cosine_distance(vec)` on PostgreSQL."""
+
+        def cosine_distance(self, other):
+            return self.op("<=>", return_type=Float)(other)
+
+        def l2_distance(self, other):
+            return self.op("<->", return_type=Float)(other)
+
+        def max_inner_product(self, other):
+            return self.op("<#>", return_type=Float)(other)
+
+    comparator_factory = Comparator
 
     def load_dialect_impl(self, dialect):
         if dialect.name == "postgresql":
