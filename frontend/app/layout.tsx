@@ -3,9 +3,9 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "AirEcho – personal air-quality health risk for Delhi-NCR",
+  title: "AirEcho – personal air-quality health risk, anywhere in India",
   description:
-    "AirEcho ties your own lagged pollution exposure to your own symptom pattern for Delhi-NCR, on the CPCB National Air Quality Index, with advisory grounded in CPCB (NAQI/NAAQS/GRAP) and WHO passages. Honest about irregular data.",
+    "AirEcho ties your own lagged pollution exposure to your own symptom pattern for any location in India, on the CPCB National Air Quality Index, with advisory grounded in CPCB (NAQI/NAAQS/GRAP) and WHO passages. Honest about irregular data.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

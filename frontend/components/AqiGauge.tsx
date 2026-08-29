@@ -1,6 +1,7 @@
 import {
   fmt,
   grapStage,
+  isNcrStation,
   naqiCategory,
   naqiFromPm25,
   NAAQS_24H,
@@ -24,7 +25,7 @@ export function AqiGauge({
   const R = 82;
   const C = Math.PI * R; // half circle
   const dash = C * pct;
-  const grap = grapStage(aqi);
+  const grap = isNcrStation(station) ? grapStage(aqi) : null;
 
   return (
     <div className="flex flex-col items-center">

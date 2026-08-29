@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
+import { HeroCtas, SignedOut } from "@/components/Cta";
 
 export const metadata: Metadata = {
   title: "Guide · AirEcho",
   description:
-    "How to use AirEcho: add your Delhi-NCR locations, log symptoms, and read your lagged personal air-quality risk with CPCB-grounded advisory.",
+    "How to use AirEcho: add your locations anywhere in India, log symptoms, and read your lagged personal air-quality risk on the CPCB NAQI with CPCB-grounded advisory.",
 };
 
 const NAQI = [
   { band: "Good", range: "0–50", pm: "0–30", color: "#55A84B", note: "Minimal impact." },
   { band: "Satisfactory", range: "51–100", pm: "31–60", color: "#A3C853", note: "Minor discomfort to very sensitive people." },
   { band: "Moderate", range: "101–200", pm: "61–90", color: "#F4C430", note: "Asthma / heart patients limit prolonged exertion." },
-  { band: "Poor", range: "201–300", pm: "91–120", color: "#F29C33", note: "GRAP Stage I. Cut back outdoor activity." },
-  { band: "Very Poor", range: "301–400", pm: "121–250", color: "#E93F33", note: "GRAP Stage II–III. Mask up; purifier indoors." },
-  { band: "Severe", range: "401–500", pm: "250+", color: "#AF2D24", note: "GRAP Stage III–IV. Stay indoors." },
+  { band: "Poor", range: "201–300", pm: "91–120", color: "#F29C33", note: "Cut back outdoor activity (Delhi-NCR: GRAP I)." },
+  { band: "Very Poor", range: "301–400", pm: "121–250", color: "#E93F33", note: "Mask up; purifier indoors (Delhi-NCR: GRAP II–III)." },
+  { band: "Severe", range: "401–500", pm: "250+", color: "#AF2D24", note: "Stay indoors (Delhi-NCR: GRAP III–IV)." },
 ];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -88,29 +89,29 @@ export default function GuidePage() {
           </h1>
           <p className="mt-4 max-w-2xl text-slate-400">
             AirEcho ties <span className="text-slate-200">your own</span> lagged exposure to{" "}
-            <span className="text-slate-200">your own</span> respiratory symptoms for locations
-            in the <span className="text-slate-200">Delhi-NCR airshed</span>. Air quality is
-            reported on the <span className="text-slate-200">CPCB National Air Quality Index</span>{" "}
-            (0–500), advisory text is grounded in CPCB (NAQI / NAAQS / GRAP) and WHO passages,
-            and all times are shown in <span className="text-slate-200">IST</span>.
+            <span className="text-slate-200">your own</span> respiratory symptoms for any
+            location <span className="text-slate-200">in India</span> &mdash; a metro, a tier-2
+            city, or a remote site like Leh or Port Blair. Air quality is reported on the{" "}
+            <span className="text-slate-200">CPCB National Air Quality Index</span> (0–500),
+            advisory text is grounded in CPCB (NAQI / NAAQS / GRAP) and WHO passages, and all
+            times are shown in <span className="text-slate-200">IST</span>.
           </p>
           <div className="mt-6 flex flex-wrap gap-3 text-sm">
-            <Link href="/register" className="btn-primary">
-              Create an account
-            </Link>
-            <Link href="/login" className="btn-ghost">
-              Sign in
-            </Link>
+            <HeroCtas />
             <a href="#screens" className="btn-ghost">
               Jump to the screens
             </a>
           </div>
-          <p className="mt-3 text-xs text-slate-600">
-            Try the seeded demo — <span className="font-mono text-slate-400">demo@example.com</span>{" "}
-            / <span className="font-mono text-slate-400">demo-pass-123</span> (rich history,
-            personal model) or <span className="font-mono text-slate-400">new@example.com</span>{" "}
-            (population fallback).
-          </p>
+          <SignedOut>
+            <p className="mt-3 text-xs text-slate-600">
+              Try the seeded demo &mdash;{" "}
+              <span className="font-mono text-slate-400">demo@example.com</span> /{" "}
+              <span className="font-mono text-slate-400">demo-pass-123</span> (Kanpur +
+              Bengaluru + Gangtok, personal model) or{" "}
+              <span className="font-mono text-slate-400">new@example.com</span> (Port Blair,
+              population fallback).
+            </p>
+          </SignedOut>
         </header>
 
         <Section eyebrow="Quick start" title="Five steps to a personal score">
@@ -122,8 +123,8 @@ export default function GuidePage() {
             <Step n="02" title="Add one or more locations">
               On the dashboard, enter a label (Home, Office, Parents&rsquo;) and either type
               coordinates or use <span className="text-slate-300">&ldquo;use mine&rdquo;</span>.
-              AirEcho snaps each location to the nearest CPCB/DPCC monitoring station and shows
-              the distance.
+              AirEcho snaps each location to the nearest CPCB / state-board monitoring station
+              &mdash; anywhere in the country &mdash; and shows the distance.
             </Step>
             <Step n="03" title="Let ingestion run">
               A background scheduler pulls station readings and weather every few minutes. You
@@ -151,8 +152,8 @@ export default function GuidePage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Panel name="Current air quality">
               The CPCB AQI (0–500) for your active location&rsquo;s nearest station, its
-              category and colour, the triggered GRAP stage if any, and the raw PM2.5 against
-              the NAAQS (60) and WHO (15) 24-hour references.
+              category and colour, the raw PM2.5 against the NAAQS (60) and WHO (15) 24-hour
+              references, and &mdash; for Delhi-NCR locations &mdash; the triggered GRAP stage.
             </Panel>
             <Panel name="Predicted symptom severity">
               A 0–10 estimate for the near term from the active model. The tag says whether
@@ -241,9 +242,10 @@ export default function GuidePage() {
 
         <Section eyebrow="India reference" title="CPCB National Air Quality Index">
           <p>
-            The dashboard leads with the CPCB AQI because every modelled station is in
-            Delhi-NCR. The overall AQI is the worst pollutant sub-index; AirEcho computes the
-            PM2.5 sub-index from CPCB&rsquo;s 24-hour breakpoints.
+            The dashboard leads with the CPCB AQI &mdash; the same national 0–500 index CPCB
+            publishes for cities across India. The overall AQI is the worst pollutant
+            sub-index; AirEcho computes the PM2.5 sub-index from CPCB&rsquo;s 24-hour
+            breakpoints.
           </p>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] border-collapse text-left text-xs">
@@ -280,12 +282,20 @@ export default function GuidePage() {
             </table>
           </div>
           <p className="pt-2">
+            <span className="font-semibold text-slate-200">Regional variation:</span> the
+            Indo-Gangetic Plain (Delhi, Kanpur, Lucknow, Patna) records the country&rsquo;s
+            highest PM2.5, worst from late October to January &mdash; inversion, low wind,
+            paddy-stubble smoke, Diwali firecrackers. Peninsular metros sit mid-range;
+            Himalayan, north-eastern and island stations (Leh, Gangtok, Itanagar, Port Blair)
+            are usually Good–Satisfactory year-round. The synthetic history follows each
+            region&rsquo;s climatology, so what you see depends on the location and the month
+            you seed.
+          </p>
+          <p>
             <span className="font-semibold text-slate-200">GRAP</span> (Graded Response Action
-            Plan) stages for Delhi-NCR trigger at AQI 201 (I), 301 (II), 401 (III) and 450
-            (IV). <span className="font-semibold text-slate-200">Season:</span> air is usually
-            worst from late October to January &mdash; inversion, low wind, paddy-stubble smoke
-            and Diwali firecrackers &mdash; and cleanest during the monsoon. The seeded demo
-            history follows this climatology, so what you see depends on when you seed.
+            Plan) is a <span className="text-slate-300">Delhi-NCR-specific</span> escalation:
+            Stage I at AQI 201, II at 301, III at 401, IV at 450. AirEcho only shows a GRAP
+            stage for NCR locations; other cities have their own local action plans.
           </p>
         </Section>
 
@@ -338,9 +348,11 @@ export default function GuidePage() {
         </Section>
 
         <div className="mt-8 flex flex-wrap gap-3 text-sm">
-          <Link href="/register" className="btn-primary">
-            Create an account
-          </Link>
+          <SignedOut>
+            <Link href="/register" className="btn-primary">
+              Create an account
+            </Link>
+          </SignedOut>
           <Link href="/dashboard" className="btn-ghost">
             Go to the dashboard
           </Link>

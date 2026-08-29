@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
+import { FooterAuthLink, HeroCtas, SignedOut } from "@/components/Cta";
 
 const REPO_URL = "https://github.com/praarn/AirEcho";
 
 const STATS = [
-  { v: "Delhi-NCR", l: "6 real CPCB / DPCC stations" },
-  { v: "CPCB NAQI", l: "0–500 index, GRAP-aware" },
+  { v: "Pan-India", l: "metros to Leh, Gangtok & Port Blair" },
+  { v: "CPCB NAQI", l: "the national 0–500 index" },
   { v: "t-0 · 6h · 24h · 72h", l: "lag horizons" },
   { v: "CPCB + WHO", l: "grounded advisory corpus" },
 ];
@@ -14,7 +15,7 @@ const STEPS = [
   {
     n: "01",
     k: "Align",
-    d: "Readings from Delhi-NCR CPCB / DPCC stations, daily weather and your symptom logs collapse into fixed 6h / 24h / 72h exposure windows. Each window records data_coverage_pct — the share of expected station slots it actually saw — so a gappy period visibly looks gappy.",
+    d: "Readings from the nearest CPCB / state-board station — anywhere in India — plus daily weather and your symptom logs collapse into fixed 6h / 24h / 72h exposure windows. Each window records data_coverage_pct — the share of expected station slots it actually saw — so a gappy period visibly looks gappy.",
   },
   {
     n: "02",
@@ -95,35 +96,30 @@ export default function Landing() {
           <div className="animate-fade-up">
             <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-slate-400">
               <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-brand" />
-              Delhi-NCR air-quality health risk correlator
+              India-wide air-quality health risk correlator
             </div>
             <h1 className="mx-auto mt-5 max-w-3xl text-center text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl">
-              Delhi&apos;s air echoes into{" "}
+              India&apos;s air echoes into{" "}
               <span className="bg-gradient-to-r from-brand-soft to-fuchsia-400 bg-clip-text text-transparent">
                 how you feel tomorrow
               </span>
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-center text-lg text-slate-400">
-              The CPCB app shows all of Delhi one number. AirEcho aligns three irregular time
-              series — CPCB / DPCC station readings, weather, and whenever you happen to log a
-              symptom — into a feature space a lagged model can actually learn from, without
-              pretending the data is cleaner than it is.
+              The CPCB index shows a whole city one number. AirEcho works anywhere in India —
+              a Kanpur flat, a Bengaluru office, a home in Leh — aligning three irregular time
+              series (nearest-station readings, weather, and whenever you log a symptom) into a
+              feature space a lagged model can actually learn from, without pretending the data
+              is cleaner than it is.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href="/register" className="btn-primary">
-                Create an account
-              </Link>
-              <Link href="/login" className="btn-ghost">
-                Sign in
-              </Link>
-              <Link href="/guide" className="btn-ghost">
-                Read the guide
-              </Link>
+              <HeroCtas />
             </div>
-            <p className="mt-3 text-center text-xs text-slate-600">
-              Seeded demo — <span className="font-mono text-slate-400">demo@example.com</span> /{" "}
-              <span className="font-mono text-slate-400">demo-pass-123</span>
-            </p>
+            <SignedOut>
+              <p className="mt-3 text-center text-xs text-slate-600">
+                Seeded demo — <span className="font-mono text-slate-400">demo@example.com</span>{" "}
+                / <span className="font-mono text-slate-400">demo-pass-123</span>
+              </p>
+            </SignedOut>
           </div>
         </section>
 
@@ -149,13 +145,14 @@ export default function Landing() {
                 A personal model, built to stay honest about its data
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-slate-400">
-                A person in Delhi-NCR logs their respiratory symptoms — a 0–10 severity,
+                A person anywhere in India logs their respiratory symptoms — a 0–10 severity,
                 optionally a peak-flow meter photo read by OCR. In the background AirEcho pulls
-                readings from the nearest CPCB / DPCC station plus daily weather, reports the
-                <span className="text-slate-200"> CPCB National Air Quality Index</span> (0–500,
-                GRAP-aware), and ties
+                readings from the nearest CPCB / state-board station plus daily weather, reports
+                the <span className="text-slate-200"> CPCB National Air Quality Index</span>{" "}
+                (0–500), and ties
                 <span className="text-slate-200"> that person&apos;s own lagged exposure history
-                to their own symptom pattern</span>.
+                to their own symptom pattern</span> &mdash; whether that&apos;s an Indo-Gangetic
+                city or a remote hill town.
               </p>
               <p className="mt-3 text-sm leading-relaxed text-slate-400">
                 The hard part is aligning three genuinely irregular time series — station
@@ -261,7 +258,7 @@ export default function Landing() {
       <footer className="border-t border-white/5 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 text-center text-xs text-slate-600 sm:px-6">
           <p>
-            Portfolio project · Delhi-NCR · models correlation with lagged features, not
+            Portfolio project · India-wide · models correlation with lagged features, not
             causation.
           </p>
           <div className="flex items-center gap-4">
@@ -279,9 +276,7 @@ export default function Landing() {
             <a href="#about" className="text-slate-500 transition hover:text-slate-300">
               About
             </a>
-            <Link href="/login" className="text-slate-500 transition hover:text-slate-300">
-              Sign in
-            </Link>
+            <FooterAuthLink className="text-slate-500 transition hover:text-slate-300" />
           </div>
         </div>
       </footer>

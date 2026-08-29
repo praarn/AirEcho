@@ -64,7 +64,7 @@ export function naqiCategory(aqi: number | null | undefined): NaqiCategory {
   return rest;
 }
 
-/** GRAP stage triggered at a given CPCB AQI (Delhi-NCR). */
+/** GRAP stage triggered at a given CPCB AQI (Delhi-NCR only). */
 export function grapStage(aqi: number | null | undefined): string | null {
   if (aqi == null) return null;
   if (aqi >= 450) return "Stage IV";
@@ -72,6 +72,25 @@ export function grapStage(aqi: number | null | undefined): string | null {
   if (aqi >= 301) return "Stage II";
   if (aqi >= 201) return "Stage I";
   return null;
+}
+
+// GRAP is a Delhi-NCR escalation, not national — only surface it for NCR stations.
+const NCR_HINTS = [
+  "delhi",
+  "ncr",
+  "gurugram",
+  "gurgaon",
+  "noida",
+  "ghaziabad",
+  "faridabad",
+  "greater noida",
+  "sonipat",
+  "bahadurgarh",
+];
+export function isNcrStation(name: string | null | undefined): boolean {
+  if (!name) return false;
+  const n = name.toLowerCase();
+  return NCR_HINTS.some((h) => n.includes(h));
 }
 
 export type AqiBand = "good" | "moderate" | "poor" | "bad" | "severe";
