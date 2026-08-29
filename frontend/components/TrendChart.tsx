@@ -15,7 +15,7 @@ import {
 } from "recharts";
 import type { ExposureWindowOut, SymptomOut } from "@/lib/types";
 import { clsx } from "@/lib/clsx";
-import { fmt } from "@/lib/format";
+import { fmt, fmtIST } from "@/lib/format";
 import { Card, CardHeader } from "./ui";
 
 type Row = {
@@ -28,6 +28,7 @@ type Row = {
 };
 
 const WINDOWS = ["6h", "24h", "72h"] as const;
+const RANGES = { "7d": 7, "30d": 30, all: Infinity } as const;
 
 export function TrendChart({
   windows,
@@ -37,30 +38,29 @@ export function TrendChart({
   symptoms: SymptomOut[];
 }) {
   const [wt, setWt] = useState<(typeof WINDOWS)[number]>("24h");
+  const [range, setRange] = useState<keyof typeof RANGES>("30d");
 
   const data = useMemo<Row[]>(() => {
+    const cutoff =
+      RANGES[range] === Infinity ? -Infinity : Date.now() - RANGES[range] * 86_400_000;
+    const lbl = (t: number) =>
+      fmtIST(new Date(t).toISOString(), { month: "short", day: "numeric", hour: "2-digit" });
     const byT = new Map<number, Row>();
     for (const w of windows.filter((w) => w.window_type === wt)) {
       const t = new Date(w.window_end).getTime();
-      byT.set(t, {
-        t,
-        label: new Date(t).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit" }),
-        pm25: w.avg_pm25,
-        coverage: w.data_coverage_pct,
-      });
+      if (t < cutoff) continue;
+      byT.set(t, { t, label: lbl(t), pm25: w.avg_pm25, coverage: w.data_coverage_pct });
     }
     for (const s of symptoms) {
       const t = new Date(s.logged_at).getTime();
-      const existing = byT.get(t) ?? {
-        t,
-        label: new Date(t).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit" }),
-      };
+      if (t < cutoff) continue;
+      const existing = byT.get(t) ?? { t, label: lbl(t) };
       existing.severity = s.severity;
       existing.peak = s.manually_confirmed ? s.peak_flow_value : null;
       byT.set(t, existing);
     }
     return [...byT.values()].sort((a, b) => a.t - b.t);
-  }, [windows, symptoms, wt]);
+  }, [windows, symptoms, wt, range]);
 
   const empty = data.length === 0;
 
@@ -70,25 +70,41 @@ export function TrendChart({
         title="Exposure & symptom timeline"
         hint="PM2.5 exposure windows with data coverage, symptom severity on the same axis. Correlational, not causal."
         right={
-          <div className="flex rounded-lg border border-white/10 bg-white/[0.02] p-0.5">
-            {WINDOWS.map((w) => (
-              <button
-                key={w}
-                onClick={() => setWt(w)}
-                className={clsx(
-                  "rounded-md px-2.5 py-1 text-xs font-medium transition",
-                  wt === w ? "bg-brand text-ink-950" : "text-slate-400 hover:text-slate-100",
-                )}
-              >
-                {w}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex rounded-lg border border-white/10 bg-white/[0.02] p-0.5">
+              {(Object.keys(RANGES) as Array<keyof typeof RANGES>).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRange(r)}
+                  className={clsx(
+                    "rounded-md px-2.5 py-1 text-xs font-medium transition",
+                    range === r ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-100",
+                  )}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+            <div className="flex rounded-lg border border-white/10 bg-white/[0.02] p-0.5">
+              {WINDOWS.map((w) => (
+                <button
+                  key={w}
+                  onClick={() => setWt(w)}
+                  className={clsx(
+                    "rounded-md px-2.5 py-1 text-xs font-medium transition",
+                    wt === w ? "bg-brand text-ink-950" : "text-slate-400 hover:text-slate-100",
+                  )}
+                >
+                  {w}
+                </button>
+              ))}
+            </div>
           </div>
         }
       />
       {empty ? (
         <div className="flex h-64 items-center justify-center text-sm text-slate-600">
-          No exposure windows yet — add a location and let ingestion run.
+          Nothing in this range — widen it, or add a location and let ingestion run.
         </div>
       ) : (
         <div className="h-72 w-full">

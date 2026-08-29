@@ -25,7 +25,7 @@ import { LiveAlerts } from "@/components/LiveAlerts";
 import { LocationBar } from "@/components/LocationBar";
 import { CoverageBadge } from "@/components/CoverageBadge";
 import { Card, CardHeader, Spinner, StatPill } from "@/components/ui";
-import { fmt } from "@/lib/format";
+import { fmt, fmtIST } from "@/lib/format";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -217,7 +217,7 @@ export default function Dashboard() {
                   {coverage.worst_window && (
                     <p className="mt-3 text-xs text-slate-500">
                       Worst: {coverage.worst_window.window_type} window ending{" "}
-                      {new Date(coverage.worst_window.window_end).toLocaleString()} at{" "}
+                      {fmtIST(coverage.worst_window.window_end)} at{" "}
                       {fmt(coverage.worst_window.data_coverage_pct, 0)}% coverage (
                       {coverage.worst_window.observed_slots}/
                       {coverage.worst_window.expected_slots} readings).
