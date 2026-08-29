@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 import numpy as np
 from sqlalchemy import select
+from sqlalchemy import text as sql_text
 from sqlalchemy.orm import Session
 
 from app.config import settings
@@ -32,6 +33,12 @@ def retrieve(db: Session, query: str, *, top_k: int | None = None) -> list[Retri
     qvec = embed_texts([query])[0]
 
     if db.bind.dialect.name == "postgresql":
+        # The guideline corpus is tiny (~20 chunks) and the IVFFlat index is
+        # built WITH (lists = 10). At the default probes = 1 a query only scans a
+        # tenth of the corpus, so the "nearest" chunk is effectively random.
+        # Probe every list — for a corpus this small that is exact search and the
+        # cost is negligible.
+        db.execute(sql_text("SET LOCAL ivfflat.probes = 10"))
         rows = db.execute(
             select(
                 GuidelineChunk,

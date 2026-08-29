@@ -25,7 +25,7 @@ import { LiveAlerts } from "@/components/LiveAlerts";
 import { LocationBar } from "@/components/LocationBar";
 import { CoverageBadge } from "@/components/CoverageBadge";
 import { Card, CardHeader, Spinner, StatPill } from "@/components/ui";
-import { fmt } from "@/lib/format";
+import { fmt, fmtIST } from "@/lib/format";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -39,7 +39,6 @@ export default function Dashboard() {
   const [risk, setRisk] = useState<RiskPredictionOut | null>(null);
   const [models, setModels] = useState<RiskModelOut[]>([]);
   const [ready, setReady] = useState(false);
-  const [training, setTraining] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login");
@@ -88,22 +87,6 @@ export default function Dashboard() {
     return rows[0] ?? null;
   }, [windows, activeId]);
 
-  async function materialize() {
-    if (!activeId) return;
-    await apiFetch(`/exposure/materialize?location_id=${activeId}`, { method: "POST" });
-    await loadData();
-  }
-
-  async function retrain() {
-    setTraining(true);
-    try {
-      await apiFetch("/risk/train", { method: "POST" });
-      await loadData();
-    } finally {
-      setTraining(false);
-    }
-  }
-
   if (loading || !user) {
     return (
       <div className="grid min-h-screen place-items-center">
@@ -116,23 +99,13 @@ export default function Dashboard() {
     <div className="min-h-screen">
       <Nav />
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-semibold text-white">Dashboard</h1>
-            <p className="text-sm text-slate-500">
-              {activeLoc
-                ? `${activeLoc.label} · station #${activeLoc.nearest_station_id ?? "—"}`
-                : "Add a location to begin"}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="btn-ghost !py-1.5 text-xs" onClick={materialize} disabled={!activeId}>
-              Recompute windows
-            </button>
-            <button className="btn-ghost !py-1.5 text-xs" onClick={retrain} disabled={training}>
-              {training ? <Spinner /> : "Retrain model"}
-            </button>
-          </div>
+        <div>
+          <h1 className="text-xl font-semibold text-white">Dashboard</h1>
+          <p className="text-sm text-slate-500">
+            {activeLoc
+              ? `${activeLoc.label} · station #${activeLoc.nearest_station_id ?? "—"}`
+              : "Add a location to begin"}
+          </p>
         </div>
 
         <div className="mt-4">
@@ -217,7 +190,7 @@ export default function Dashboard() {
                   {coverage.worst_window && (
                     <p className="mt-3 text-xs text-slate-500">
                       Worst: {coverage.worst_window.window_type} window ending{" "}
-                      {new Date(coverage.worst_window.window_end).toLocaleString()} at{" "}
+                      {fmtIST(coverage.worst_window.window_end)} at{" "}
                       {fmt(coverage.worst_window.data_coverage_pct, 0)}% coverage (
                       {coverage.worst_window.observed_slots}/
                       {coverage.worst_window.expected_slots} readings).

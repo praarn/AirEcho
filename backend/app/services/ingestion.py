@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.models import AqiReading, IngestionEvent, Station, WeatherDaily
+from app.services.climatology import region_for_external_id, region_pm25_mean
 
 POLLUTANTS = ["pm25", "pm10", "no2", "o3"]
 _SILENT_AFTER = timedelta(hours=3)
@@ -93,28 +94,45 @@ def synthetic_readings_for_station(
     gap_prob: float = 0.18,
     seed: int | None = None,
 ) -> list[tuple[str, float, datetime]]:
-    """Diurnal PM curve + noise, with ~`gap_prob` of slots dropped entirely to
-    mimic an intermittently-reporting sensor."""
+    """Region-aware synthetic feed: PM2.5 anchored to the station's regional
+    climatology for the month (Indo-Gangetic winter smog vs. flat coastal vs.
+    clean Himalayan), with two rush-hour humps and an early-morning inversion
+    peak, an AR(1) noise term so consecutive readings drift rather than jump
+    independently, and both slot-level (`gap_prob`) and multi-hour "sensor
+    offline" dropouts."""
     rng = random.Random(seed if seed is not None else hash((station.id, since)))
     step = timedelta(minutes=station.nominal_cadence_minutes)
+    region = region_for_external_id(station.external_id)
+    # a stable per-station offset so one site reads dirtier than its neighbour
+    station_bias = 1.0 + 0.12 * ((station.id * 2654435761) % 97 / 97 - 0.5) * 2
     out: list[tuple[str, float, datetime]] = []
+    drift = 1.0  # AR(1) multiplicative wander
+    burst_left = 0
     t = since
     while t < until:
-        if rng.random() > gap_prob:
+        drift = 0.82 * drift + 0.18 * rng.uniform(0.8, 1.2)
+        if burst_left <= 0 and rng.random() < 0.02:
+            burst_left = rng.randint(2, 6)
+        if burst_left <= 0 and rng.random() > gap_prob:
             hod = t.hour + t.minute / 60
-            # two rush-hour humps
-            diurnal = (
-                40 + 30 * math.exp(-((hod - 9) ** 2) / 6) + 35 * math.exp(-((hod - 20) ** 2) / 8)
+            clim = region_pm25_mean(region, t.month)
+            shape = (
+                0.72
+                + 0.30 * math.exp(-((hod - 8) ** 2) / 7)
+                + 0.40 * math.exp(-((hod - 21) ** 2) / 9)
             )
+            pm25 = max(6.0, clim * shape * drift * station_bias + rng.gauss(0, clim * 0.05))
             for pol in POLLUTANTS:
-                base = {
-                    "pm25": diurnal,
-                    "pm10": diurnal * 1.7,
-                    "no2": diurnal * 0.6,
-                    "o3": max(5, 60 - diurnal * 0.4),
-                }[pol]
-                val = max(0.0, base * rng.uniform(0.75, 1.3) + rng.gauss(0, 4))
+                if pol == "o3":
+                    afternoon = 26 * math.exp(-((hod - 15) ** 2) / 10)
+                    val = max(4.0, 58 - pm25 * 0.22 + afternoon + rng.gauss(0, 6))
+                else:
+                    factor = {"pm25": 1.0, "pm10": 1.9, "no2": 0.5}[pol]
+                    if pol == "no2":  # NO2 tracks traffic more than PM
+                        factor *= 1.0 + 0.5 * math.exp(-((hod - 9) ** 2) / 5)
+                    val = max(0.0, pm25 * factor * rng.uniform(0.82, 1.22) + rng.gauss(0, 4))
                 out.append((pol, round(val, 2), t))
+        burst_left = max(0, burst_left - 1)
         t += step
     return out
 

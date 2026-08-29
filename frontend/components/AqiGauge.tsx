@@ -1,4 +1,12 @@
-import { bandColor, bandLabel, fmt, pm25Band, WHO_24H } from "@/lib/format";
+import {
+  fmt,
+  grapStage,
+  isNcrStation,
+  naqiCategory,
+  naqiFromPm25,
+  NAAQS_24H,
+  WHO_24H,
+} from "@/lib/format";
 
 export function AqiGauge({
   pm25,
@@ -9,13 +17,15 @@ export function AqiGauge({
   station?: string | null;
   distanceKm?: number | null;
 }) {
-  const band = pm25Band(pm25);
-  const color = bandColor[band];
-  const max = 150;
-  const pct = Math.max(0, Math.min(1, (pm25 ?? 0) / max));
-  const R = 78;
+  const aqi = naqiFromPm25(pm25);
+  const cat = naqiCategory(aqi);
+  const color = cat.color;
+  const max = 500; // CPCB NAQI scale
+  const pct = Math.max(0, Math.min(1, (aqi ?? 0) / max));
+  const R = 82;
   const C = Math.PI * R; // half circle
   const dash = C * pct;
+  const grap = isNcrStation(station) ? grapStage(aqi) : null;
 
   return (
     <div className="flex flex-col items-center">
@@ -36,23 +46,34 @@ export function AqiGauge({
           strokeDasharray={`${dash} ${C}`}
           style={{ transition: "stroke-dasharray 0.8s ease" }}
         />
-        <text x="100" y="86" textAnchor="middle" className="fill-slate-100" fontSize="30" fontWeight="700">
-          {fmt(pm25, 0)}
+        <text
+          x="100"
+          y="84"
+          textAnchor="middle"
+          className="fill-slate-100"
+          fontSize="32"
+          fontWeight="700"
+        >
+          {aqi == null ? "—" : aqi}
         </text>
-        <text x="100" y="104" textAnchor="middle" className="fill-slate-500" fontSize="11">
-          µg/m³ PM2.5
+        <text x="100" y="103" textAnchor="middle" className="fill-slate-500" fontSize="11">
+          CPCB AQI
         </text>
       </svg>
       <div
         className="mt-1 rounded-full px-3 py-1 text-xs font-semibold"
         style={{ backgroundColor: `${color}1f`, color }}
       >
-        {bandLabel[band]}
+        {cat.label}
+        {grap ? ` · GRAP ${grap}` : ""}
       </div>
-      <p className="mt-2 text-center text-[11px] text-slate-500">
-        WHO 24-h guideline {WHO_24H.pm25} µg/m³
+      <p className="mt-2 max-w-[260px] text-center text-[11px] leading-relaxed text-slate-500">
+        PM2.5 {fmt(pm25, 0)} µg/m³ · NAAQS 24-h {NAAQS_24H.pm25} · WHO 24-h {WHO_24H.pm25}
         {station ? ` · ${station}` : ""}
         {distanceKm != null ? ` · ${fmt(distanceKm, 1)} km away` : ""}
+      </p>
+      <p className="mt-1.5 max-w-[260px] text-center text-[11px] leading-relaxed text-slate-400">
+        {cat.advice}
       </p>
     </div>
   );

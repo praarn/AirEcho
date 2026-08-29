@@ -1,5 +1,5 @@
 import type { RiskModelOut } from "@/lib/types";
-import { fmt } from "@/lib/format";
+import { fmt, fmtDateIST } from "@/lib/format";
 import { Card, CardHeader } from "./ui";
 
 /**
@@ -54,7 +54,7 @@ export function ModelScorecard({ models }: { models: RiskModelOut[] }) {
                 </div>
                 <p className="mt-2 text-[11px] text-slate-500">
                   train {m.n_train} · test {m.n_test} · trained{" "}
-                  {new Date(m.trained_at).toLocaleDateString()}
+                  {fmtDateIST(m.trained_at)}
                 </p>
               </div>
             );
