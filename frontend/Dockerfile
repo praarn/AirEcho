@@ -8,6 +8,11 @@ RUN npm install
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Next.js freezes rewrite destinations into the build, so the backend proxy
+# target has to be known here, not just at runtime. Defaults to the compose
+# service name; override with --build-arg for other topologies.
+ARG API_PROXY_TARGET=http://backend:8000
+ENV API_PROXY_TARGET=$API_PROXY_TARGET
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
