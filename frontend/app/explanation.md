@@ -27,8 +27,10 @@ NO₂/O₃/PM10 pills) · `RiskCard` · `WhyThisScore`. **row 2** full-width
 **row 4** `AdvisoryPanel` (2 cols) · `LiveAlerts`. **row 5** full-width data
 coverage summary.
 
-Two manual buttons: "Recompute windows" → `POST /exposure/materialize`; "Retrain
-model" → `POST /risk/train`. Both re-run `loadData()`.
+Exposure windows and models rebuild automatically as the background scheduler
+ingests; the dashboard is read-only (there are no manual recompute/retrain
+buttons). `/exposure/materialize` and `/risk/train` still exist on the API and
+run from `Live feed → Run ingestion now` and the scheduler.
 
 ## `admin/page.tsx`
 

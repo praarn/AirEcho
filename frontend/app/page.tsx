@@ -2,8 +2,6 @@ import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { FooterAuthLink, HeroCtas, SignedOut } from "@/components/Cta";
 
-const REPO_URL = "https://github.com/praarn/AirEcho";
-
 const STATS = [
   { v: "Pan-India", l: "metros to Leh, Gangtok & Port Blair" },
   { v: "CPCB NAQI", l: "the national 0–500 index" },
@@ -165,8 +163,8 @@ export default function Landing() {
                 <Link href="/guide" className="btn-ghost">
                   Read the guide
                 </Link>
-                <a href={REPO_URL} target="_blank" rel="noreferrer" className="btn-ghost">
-                  Source on GitHub
+                <a href="#how" className="btn-ghost">
+                  How it works
                 </a>
               </div>
             </div>
@@ -262,14 +260,6 @@ export default function Landing() {
             causation.
           </p>
           <div className="flex items-center gap-4">
-            <a
-              href={REPO_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="text-slate-500 transition hover:text-slate-300"
-            >
-              GitHub
-            </a>
             <Link href="/guide" className="text-slate-500 transition hover:text-slate-300">
               Guide
             </Link>
