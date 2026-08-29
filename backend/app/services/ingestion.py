@@ -20,16 +20,10 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.models import AqiReading, IngestionEvent, Station, WeatherDaily
+from app.services.climatology import region_for_external_id, region_pm25_mean
 
 POLLUTANTS = ["pm25", "pm10", "no2", "o3"]
 _SILENT_AFTER = timedelta(hours=3)
-
-# Delhi PM2.5 climatology — approximate monthly means (µg/m³). Winter is
-# trapped-inversion + stubble-smoke season; the monsoon washes the air out.
-_DELHI_PM25_CLIMATOLOGY = {
-    1: 200, 2: 130, 3: 95, 4: 88, 5: 82, 6: 70,
-    7: 48, 8: 42, 9: 58, 10: 120, 11: 235, 12: 205,
-}  # fmt: skip
 
 
 def _now() -> datetime:
@@ -100,13 +94,16 @@ def synthetic_readings_for_station(
     gap_prob: float = 0.18,
     seed: int | None = None,
 ) -> list[tuple[str, float, datetime]]:
-    """Delhi-flavoured synthetic feed: PM2.5 anchored to the month's climatology
-    with two rush-hour humps and an early-morning inversion peak, an AR(1) noise
-    term so consecutive readings drift rather than jump independently, and both
-    slot-level (`gap_prob`) and multi-hour "sensor offline" dropouts."""
+    """Region-aware synthetic feed: PM2.5 anchored to the station's regional
+    climatology for the month (Indo-Gangetic winter smog vs. flat coastal vs.
+    clean Himalayan), with two rush-hour humps and an early-morning inversion
+    peak, an AR(1) noise term so consecutive readings drift rather than jump
+    independently, and both slot-level (`gap_prob`) and multi-hour "sensor
+    offline" dropouts."""
     rng = random.Random(seed if seed is not None else hash((station.id, since)))
     step = timedelta(minutes=station.nominal_cadence_minutes)
-    # a stable per-station offset so Anand Vihar reads dirtier than the airport
+    region = region_for_external_id(station.external_id)
+    # a stable per-station offset so one site reads dirtier than its neighbour
     station_bias = 1.0 + 0.12 * ((station.id * 2654435761) % 97 / 97 - 0.5) * 2
     out: list[tuple[str, float, datetime]] = []
     drift = 1.0  # AR(1) multiplicative wander
@@ -118,7 +115,7 @@ def synthetic_readings_for_station(
             burst_left = rng.randint(2, 6)
         if burst_left <= 0 and rng.random() > gap_prob:
             hod = t.hour + t.minute / 60
-            clim = _DELHI_PM25_CLIMATOLOGY[t.month]
+            clim = region_pm25_mean(region, t.month)
             shape = (
                 0.72
                 + 0.30 * math.exp(-((hod - 8) ** 2) / 7)

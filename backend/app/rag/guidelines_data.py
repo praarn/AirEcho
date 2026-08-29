@@ -57,6 +57,16 @@ GUIDELINES: list[dict] = [
                 "limit prolonged or heavy outdoor exertion.",
             ),
             (
+                "CPCB NAQI §National coverage and regional variation",
+                "The NAQI is a national index reported by CPCB for cities across India "
+                "through the Continuous Ambient Air Quality Monitoring (CAAQMS) network. "
+                "Typical pollution levels vary widely by region: the Indo-Gangetic Plain "
+                "(Delhi, Kanpur, Lucknow, Patna) records the highest PM2.5, especially in "
+                "winter; peninsular and southern cities are moderate; and hill, "
+                "north-eastern and island stations such as Leh, Gangtok, Itanagar and "
+                "Port Blair are usually in the Good to Satisfactory range year-round.",
+            ),
+            (
                 "CPCB NAQI §Health statement — Poor, Very Poor, Severe",
                 "In the Poor category (AQI 201–300) CPCB notes breathing discomfort for "
                 "most people on prolonged exposure. Very Poor (301–400) may cause "
