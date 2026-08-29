@@ -35,8 +35,7 @@ export default function Landing() {
       <main className="mx-auto max-w-6xl px-4 sm:px-6">
         <section className="relative py-20 sm:py-28">
           <div className="absolute inset-0 -z-10 bg-grid bg-[size:44px_44px] [mask-image:radial-gradient(40rem_30rem_at_50%_0%,black,transparent)]" />
-          <p className="chip mx-auto w-fit">Next.js · FastAPI · PostgreSQL + pgvector · scikit-learn</p>
-          <h1 className="mx-auto mt-5 max-w-3xl text-center text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl">
+          <h1 className="mx-auto max-w-3xl text-center text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl">
             Today&apos;s air echoes into{" "}
             <span className="bg-gradient-to-r from-brand-soft to-fuchsia-400 bg-clip-text text-transparent">
               how you feel tomorrow
