@@ -140,12 +140,11 @@ GUIDELINES: list[dict] = [
         "sections": [
             (
                 "WHO AQG 2021 §Recommended levels — PM2.5",
-                "For fine particulate matter (PM2.5), the WHO guideline value recommends "
-                "an annual mean concentration not exceeding 5 µg/m³ and a 24-hour mean "
-                "guideline value not exceeding 15 µg/m³ on more than 3–4 days per year. "
-                "PM2.5 penetrates deep into the lungs and enters the bloodstream; "
-                "long-term exposure is linked to cardiovascular and respiratory "
-                "mortality and lung cancer.",
+                "For fine particulate matter (PM2.5), WHO recommends an annual mean "
+                "concentration not exceeding 5 µg/m³ and a 24-hour mean not exceeding "
+                "15 µg/m³ on more than 3–4 days per year. PM2.5 penetrates deep into the "
+                "lungs and enters the bloodstream; long-term exposure is linked to "
+                "cardiovascular and respiratory mortality and lung cancer.",
             ),
             (
                 "WHO AQG 2021 §Recommended levels — PM10",
