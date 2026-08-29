@@ -89,18 +89,19 @@ def _diurnal_pm(ts: datetime, base_shift: float) -> float:
 def seed_stations(db) -> list[Station]:
     out = []
     for i, (name, lat, lng, cadence) in enumerate(STATIONS):
-        st = db.execute(select(Station).where(Station.location_name == name)).scalar_one_or_none()
+        ext = f"syn-{i}"
+        # key on the stable (source, external_id) so re-seeding after a rename
+        # updates the row in place instead of colliding on the unique constraint
+        st = db.execute(
+            select(Station).where(Station.source == "synthetic", Station.external_id == ext)
+        ).scalar_one_or_none()
         if not st:
-            st = Station(
-                source="synthetic",
-                external_id=f"syn-{i}",
-                location_name=name,
-                lat=lat,
-                lng=lng,
-                nominal_cadence_minutes=cadence,
-                last_seen_at=NOW,
-            )
+            st = Station(source="synthetic", external_id=ext)
             db.add(st)
+        st.location_name = name
+        st.lat, st.lng = lat, lng
+        st.nominal_cadence_minutes = cadence
+        st.last_seen_at = NOW
         out.append(st)
     db.flush()
     return out
