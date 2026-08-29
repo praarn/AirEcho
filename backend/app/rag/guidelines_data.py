@@ -59,12 +59,12 @@ GUIDELINES: list[dict] = [
             (
                 "CPCB NAQI §National coverage and regional variation",
                 "The NAQI is a national index reported by CPCB for cities across India "
-                "through the Continuous Ambient Air Quality Monitoring (CAAQMS) network. "
-                "Typical pollution levels vary widely by region: the Indo-Gangetic Plain "
-                "(Delhi, Kanpur, Lucknow, Patna) records the highest PM2.5, especially in "
-                "winter; peninsular and southern cities are moderate; and hill, "
-                "north-eastern and island stations such as Leh, Gangtok, Itanagar and "
-                "Port Blair are usually in the Good to Satisfactory range year-round.",
+                "through the Continuous Ambient Air Quality Monitoring network. Typical "
+                "index values vary widely by region: the Indo-Gangetic Plain "
+                "(Delhi, Kanpur, Lucknow, Patna) records the country's highest readings, "
+                "especially in winter; peninsular and southern cities are moderate; and "
+                "hill, north-eastern and island stations such as Leh, Gangtok, Itanagar "
+                "and Port Blair are usually in the Good to Satisfactory range year-round.",
             ),
             (
                 "CPCB NAQI §Health statement — Poor, Very Poor, Severe",
@@ -140,11 +140,12 @@ GUIDELINES: list[dict] = [
         "sections": [
             (
                 "WHO AQG 2021 §Recommended levels — PM2.5",
-                "For fine particulate matter (PM2.5), WHO recommends an annual mean "
-                "concentration not exceeding 5 µg/m³ and a 24-hour mean not exceeding "
-                "15 µg/m³ on more than 3–4 days per year. PM2.5 penetrates deep into the "
-                "lungs and enters the bloodstream; long-term exposure is linked to "
-                "cardiovascular and respiratory mortality and lung cancer.",
+                "For fine particulate matter (PM2.5), the WHO guideline value recommends "
+                "an annual mean concentration not exceeding 5 µg/m³ and a 24-hour mean "
+                "guideline value not exceeding 15 µg/m³ on more than 3–4 days per year. "
+                "PM2.5 penetrates deep into the lungs and enters the bloodstream; "
+                "long-term exposure is linked to cardiovascular and respiratory "
+                "mortality and lung cancer.",
             ),
             (
                 "WHO AQG 2021 §Recommended levels — PM10",
